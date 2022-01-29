@@ -88,6 +88,26 @@ class MainFragment : Fragment() {
     private fun observeAuthenticationState() {
         val factToDisplay = viewModel.getFactToDisplay(requireContext())
 
+        viewModel.authenticationState.observe(viewLifecycleOwner) { authenticationState ->
+            when (authenticationState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    binding.authButton.text = getString(R.string.logout_button_text)
+                    binding.authButton.setOnClickListener {
+                        AuthUI.getInstance().signOut(requireContext())
+                    }
+
+                    binding.welcomeText.text = getFactWithPersonalization(factToDisplay)
+                }
+                else -> {
+                    binding.authButton.text = getString(R.string.login_button_text)
+                    binding.authButton.setOnClickListener {
+                        launchSignInFlow()
+                    }
+                    binding.welcomeText.text = factToDisplay
+                }
+            }
+        }
+
         // TODO Use the authenticationState variable from LoginViewModel to update the UI
         //  accordingly.
         //
